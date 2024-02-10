@@ -33,6 +33,7 @@ int main() {
 
 	while (ptr != -1) {
 		if (ptr_prev != ptr) {
+			//判断ptr的位置是否前进
 			if (key_rec.count(abs(mem[ptr].k)) == 0) {
 	   			// 键值第一次出现
 	   			key_rec[abs(mem[ptr].k)] = true;
@@ -42,6 +43,7 @@ int main() {
 		}
    		
    		//check for next one
+   		//不断缩小重复链表的长度，直到下一个节点的key的绝对值是unique的
    		next = mem[ptr].nxt;
    		if (key_rec.count(abs(mem[next].k)) != 0 && next != -1) {
    			// already exist K
@@ -57,7 +59,7 @@ int main() {
    			dptr_prev = next;
    		} else {
    			ptr = next;
-	   		// move on
+	   		// move on，前进
    		}
 	}
 
