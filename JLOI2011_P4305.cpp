@@ -56,7 +56,7 @@ int main() {
 				vv[i].push_back(digit);
 			}
 		}
-	}	
+	}
 
 	for (int i = 0; i < t; i++) {
 		for (int j = 0; j < vv[i].size(); j++) {

@@ -1,95 +1,84 @@
 #include <bits/stdc++.h> 
-
+#include <unordered_map>
+ 
 using namespace std;
 
-#define mod (100001)
-#define ll long long
-
 struct node {
-	int addr;
-	int value;
-	int next;
+	int k;
+	int nxt;
 };
 
-node d[mod] {};
-list<node*> l;
-list<node*> l2;
-list<node*> l3;
-int root, n, root_i;
+node mem[100001]; //内存空间
 
-void traverse_insert(node *p) {
-	l.push_back(p);
-
-	if (p->next == -1)
-		return;
-
-	for (int i = 0; i < n; i++) {
-		if (d[i].addr == p->next)
-			return traverse_insert(&d[i]);
-	}
-}
-  
 int main() {
-    using namespace std;
-
+    
     ios_base::sync_with_stdio(false); 
     cin.tie(NULL); 
 
-    
-    cin >> root >> n;
-    for (int i = 0; i < n; i++) {
-    	cin >> d[i].addr >> d[i].value >> d[i].next;
-    	if (d[i].addr == root) {
-    		root_i = i;
-    	}
-    }
-    traverse_insert(&d[root_i]);
+   	unordered_map<int, bool> key_rec;
 
-    map<int, int> m;
-    int ia;
+	int beg, n;
+	int addr;
 
-    node *p, *p3;
-	for (auto it = l.begin(); it != l.end(); it++) {
-		p = (*it);
-		ia = abs(p->value);
+	cin >> beg >> n;
 
-    	m[ia]++;
-
-    	if (m[ia] > 1) {
-    		if (it != prev(l.end())) {
-	    		p3 = *prev(it);
-	    		p3->next = p->next;
-    		} else {
-    			p->next = -1;
-    		}
-	    	l3.push_back(p);
-    	} else {
-    		l2.push_back(p);
-    	}
+	// get
+	for (int i = 0; i < n; i++) {
+		cin >> addr >> mem[addr].k >> mem[addr].nxt;
 	}
 
-    l2.back()->next = -1; //keep
-    l3.back()->next = -1; //delete
+	// set
+	int ptr = beg, next, ptr_prev = -1;
+	int dptr_beg = -1, dptr_prev = -1; //dptr_beg "删除列表"的第一个节点的地址
 
-    for (const auto& element : l2) {
-    	if (element->next == -1)
-	    	printf("%05d %d -1", element->addr, element->value);
-	    else
-    		printf("%05d %d %05d", element->addr, element->value, element->next);
-    	if (!l.empty())
-    		printf("\n");
-    	else if (element != l2.back())
-    		printf("\n");
-    }
+	while (ptr != -1) {
+		if (ptr_prev != ptr) {
+			if (key_rec.count(abs(mem[ptr].k)) == 0) {
+	   			// 键值第一次出现
+	   			key_rec[abs(mem[ptr].k)] = true;
 
-    for (const auto& element : l3) {
-    	if (element->next == -1)
-	    	printf("%05d %d -1", element->addr, element->value);
-	    else
-    		printf("%05d %d %05d", element->addr, element->value, element->next);
-    	if (element != l3.back())
-    		printf("\n");
-    }
+   				ptr_prev = ptr;
+	   		} 
+		}
+   		
+   		//check for next one
+   		next = mem[ptr].nxt;
+   		if (key_rec.count(abs(mem[next].k)) != 0 && next != -1) {
+   			// already exist K
+   			mem[ptr].nxt = mem[next].nxt; //skip & link
+
+   			// add to deleted
+   			if (dptr_beg == -1) {
+   				dptr_beg = next; //next 作为删除列表第一个节点
+   			} else {
+   				mem[dptr_prev].nxt = next;
+   			}
+   			mem[next].nxt = -1;
+   			dptr_prev = next;
+   		} else {
+   			ptr = next;
+	   		// move on
+   		}
+	}
+
+	ptr = beg;
+	while (ptr != -1) {
+		if (mem[ptr].nxt == -1) 
+			printf("%05d %d %d\n", ptr, mem[ptr].k, mem[ptr].nxt);
+		else 
+			printf("%05d %d %05d\n", ptr, mem[ptr].k, mem[ptr].nxt);
+		ptr = mem[ptr].nxt;
+	}
+
+
+	ptr = dptr_beg;
+	while (ptr != -1) {
+		if (mem[ptr].nxt == -1) 
+			printf("%05d %d %d\n", ptr, mem[ptr].k, mem[ptr].nxt);
+		else 
+			printf("%05d %d %05d\n", ptr, mem[ptr].k, mem[ptr].nxt);
+		ptr = mem[ptr].nxt;
+	}
 
 	return 0;
 }
