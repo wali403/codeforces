@@ -45,7 +45,7 @@ int main() {
 		q.pop();
 
 		// 应该在这里标记u为已访问
-		nv[u].visit = true; // 标记当前节点为已访问
+		//nv[u].visit = true; // 标记当前节点为已访问
 
 		//遍历所有邻接顶点
 		int sz = edges[u].size();
@@ -59,7 +59,7 @@ int main() {
 
 				// 这里应该标记edges[u][i]为已访问，但是正确的做法是在这个节点实际出队列时标记
 				// 所以这行注释掉
-				// nv[edges[u][i]].visit = true;
+				nv[edges[u][i]].visit = true;
 			}
 		}
 	}
