@@ -11,13 +11,13 @@ struct user {
 };
 
 int main(int argc, char const *argv[]) {
-	
+
 	using namespace std;
 
 	//code
 	int num = 0;
 	cin >> num;
- 
+
 	std::unordered_map<string, int> m; //record
 	std::vector<user> v;
 
@@ -35,7 +35,8 @@ int main(int argc, char const *argv[]) {
 			ss << c;
 			m[s] += 1; //origin
 			s.append(ss.str());
-			
+
+
 			u.s = s;
 			u.edited = true;
 			v.push_back(u);

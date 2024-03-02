@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <bits/stdc++.h> 
+#include <bits/stdc++.h>
 
 #define mod (100001)
 #define ll long long
@@ -7,8 +7,8 @@
 int main() {
     using namespace std;
 
-    ios_base::sync_with_stdio(false); 
-    cin.tie(NULL); 
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
 
 	int t;
 	cin >> t;
