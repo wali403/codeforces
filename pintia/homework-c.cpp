@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <valarray>
 
 using namespace std;
 
@@ -58,9 +59,16 @@ public:
 		cout << 0;
 	}
 	void dec() {
-		for (int i = SZ-len; i < SZ; ++i) {
-				cout << v[i];
-			}
+		for (int i = SZ - len; i < SZ; ++i) {
+			cout << v[i];
+		}
+	}
+	string dec_s() {
+		stringstream ss;
+		for (int i = SZ - len; i < SZ; ++i) {
+			ss << v[i];
+		}
+		return ss.str();
 	}
 	void hex() {
 
@@ -80,19 +88,51 @@ public:
 		if (v[SZ - 1 - len])
 			len++;
 	}
-	void mul(BigInt &b) {
-		BigInt result;
-		for (int i = 0; i < SZ - 1; ++i) {
-			// 这里直接计算结果中的从低到高第 i 位，且一并处理了进位
-			// 第 i 次循环为 c[i] 加上了所有满足 p + q = i 的 a[p] 与 b[q] 的乘积之和
-			// 这样做的效果和直接进行上图的运算最后求和是一样的，只是更加简短的一种实现方式
-			for (int j = 0; j <= i; ++j) result.v[i] += v[j] * b.v[i - j];
 
-			if (result.v[i] >= 10) {
-				result.v[i + 1] += result.v[i] / 10;
-				result.v[i] %= 10;
+	void mul(BigInt &BB) {
+		int v1[SZ] {}, v2[SZ] {}, ans[SZ] {};
+		string a = dec_s(), b = BB.dec_s();
+
+		int p1 = SZ - 1, p2 = SZ - 1;
+
+		reverse(a.begin(), a.end());
+		reverse(b.begin(), b.end());
+
+		for (auto it : a)
+			v1[p1--] = it - '0';
+		for (auto it : b)
+			v2[p2--] = it - '0';
+
+		int *lesser = p1 > p2 ? v1 : v2;
+		int *greater = p1 > p2 ? v2 : v1;
+
+		int mx = max(p1, p2);
+		int mi = min(p1, p2);
+
+		int loc = 0;
+		int vaild = SZ - 1; //有效位置
+		int carry = 0, carry_p = 0; //乘法进位，加法进位
+
+		//逆序数组，模拟乘法计算
+		for (int i = SZ - 1; i >= mx; i--) { //用位数小的去乘大的，位数越小，那么前置0越多
+			loc = i;
+			for (int j = SZ - 1; j >= mi; j--) {
+				ans[loc] += ((lesser[i] * greater[j]) % 10) + carry;
+				carry = (lesser[i] * greater[j]) / 10;
+
+				//检查加法进位
+				ans[loc] += carry_p;
+				carry_p = ans[loc] / 10;
+				ans[loc] %= 10;
+
+				if (ans[loc])
+					vaild = loc;
+				loc--;
 			}
 		}
+
+		len = SZ - vaild;
+		memcpy(v, ans, sizeof(ans));
 	}
 };
 
@@ -100,15 +140,32 @@ int main() {
 	ios_base::sync_with_stdio(false);
 	cin.tie(NULL);
 
-	cout << "numeric_limits<long long>().max(): " << endl << numeric_limits<long long>().max() << endl;
+	cout << "numeric_limits<long long>().max() * numeric_limits<long long>().max() = " << endl;
+	BigInt a;
+	a.set(numeric_limits<long long>().max());
+	a.bin();
 
-	cout << "BigInt Add:" << endl;
-	BigInt b("1110");
-	BigInt b2("11");
-	b.add(b2);
-	cout << "len = " << b.len << endl;
+	cout << endl << endl;
+	a = BigInt("111111111111111111111111111111");
+	a.dec();
+
+	return 0;
+
+	cout << "BigInt b(\"1111\"); BigInt b2(\"1111\");" << endl;
+	BigInt b("1111");
+	BigInt b2("1111");
+	cout << "b.mul(b2) = ";
+	b.mul(b2);
 	b.dec();
-	cout << endl;
+
+	cout << endl << endl;
+	cout << "numeric_limits<long long>().max(): " << endl << numeric_limits<long long>().max() << endl;
+	cout << "numeric_limits<long long>().max() * numeric_limits<long long>().max() = " << endl;
+	BigInt c, d;
+	c.set(numeric_limits<long long>().max());
+	d.set(numeric_limits<long long>().max());
+	c.mul(d);
+	c.dec();
 
 	return 0;
 }
