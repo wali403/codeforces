@@ -9,30 +9,17 @@ struct node {
 };
 
 string bo;
-node *bfs() {
-	queue<node*> q;
-	q.push(new node(bo[0]));
-	node* current;
-	node* root = q.front();
-	int index = 1;
+node *build(int index) {
+	if (index > bo.size())
+		return nullptr;
+	if (bo[index] == '@')
+		return nullptr;
+	//cout << "bo[index] = " << bo[index] << endl;
+	node *root = new node(bo[index]);
+	root->lch = build(index * 2);
+	root->rch = build(index * 2 + 1);
 
-    while (!q.empty() && index < bo.size()) {
-       	current = q.front();
-        q.pop();
-
-        if (index < bo.size() && bo[index] != '@') {
-            current->lch = new node(bo[index]);
-            q.push(current->lch);
-        }
-        index++;
-
-        if (index < bo.size() && bo[index] != '@') {
-            current->rch = new node(bo[index]);
-            q.push(current->rch);
-        }
-        index++;
-    }
-    return root;
+	return root;
 }
 
 void bfs_traverse(node* root) {
@@ -65,8 +52,9 @@ void dfs(node *root) {
 int main() {    
     cout << "type in bfs order:";
     cin >> bo;
+    bo.insert(0, "-");
 
-    node* root = bfs();
+    node* root = build(1);
 
     cout << "pre-order generated:";
     dfs(root);
@@ -74,8 +62,7 @@ int main() {
 
     cout << "bfs order:";
     bfs_traverse(root);
-
 	return 0;
 }
 
-// ABC@D@@
+//ABCD@E@@F@@@@
