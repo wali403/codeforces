@@ -1,61 +1,44 @@
 #include <bits/stdc++.h>
-#include <iterator>
-#include <set>
 using namespace std;
 
 const int mod = 2e3 + 10;
-typedef unsigned long long ll;
+typedef long long ll;
 #define x first
 #define y second
 typedef pair<int, int> P;
 
-multiset<ll> s;
-
-int n;
-ll k;
-
+ll a[mod];
 void solve() {
-
+	ll n, k;
 	cin >> n >> k;
 
-	s.clear();
-
-	ll tmp;
-	for (int i = 0; i < n; i++) {
-		cin >> tmp;
-		s.insert(tmp);
-	}
-
+	for (int i = 0; i < n; i++) cin >> a[i];
 	if (k >= 3) {
 		cout << 0 << endl;
 		return;
 	}
-	ll x, y;
-	ll mi = 1e18+1;
+
+	std::sort(a, a+n);
+
+	ll d = a[0];
+	for (int i = 0; i < n - 1; i++) {
+		d = min(d, a[i + 1] - a[i]);
+	}
+
 	if (k == 1) {
-		for (auto it = s.begin(); it != prev(s.end()); it++) {
-			x = *it, y = *next(it);
-			if (y - x < mi) {
-				mi = y - x;
-			}
-		}
-		cout << mi << endl;
+		cout << d << endl;
 		return;
 	}
 
-	ll ans = 1e18+1;
-	for (auto it = s.begin(); it != s.end(); it++) {
-		for (auto yt = s.begin(); yt != it; yt++) {
-			ll v = *it - *yt;
-			ans = min(ans, v);
-			auto a = s.lower_bound(v);
-			auto b = s.upper_bound(v);
-
-			ans = min(ans, min(*a-v, v-*b));
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < i; j++) {
+			ll v = a[i] - a[j];
+			ll p = lower_bound(a, a+n, v) - a;
+			if (p < n) d = min(d, a[p] - v);
+			if (p > 0) d = min(d, v - a[p - 1]);
 		}
 	}
-
-	cout << ans << endl;
+	cout << d << endl;
 }
 
 int main() {
@@ -66,6 +49,5 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) solve();
-
 	return 0;
 }
