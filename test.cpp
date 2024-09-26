@@ -1,35 +1,31 @@
-#include <bits/stdc++.h> 
+#include <iostream>
+#include <vector>
+
 using namespace std;
+int main() {
+    int N, M;
+    cin >> N >> M;
 
-const int mod = 2e5+10;
-typedef long long ll;
-typedef unsigned long long ull;
-#define x first
-#define y second
-typedef pair<int, int> P;
+    int mx = -1, x, y, tmp;
+    for (int i = 1; i <= N; i++) { //row 
+        for (int j = 1; j <= M; j++) { //col
+            cin >> tmp;
+            if (tmp > mx) {
+            	mx = tmp, y = i, x = j;
+            }
+        }
+    }
 
-void solve() {
-	int n, m;
-	scanf("%d%d",&n,&m);
-
-	int cur = 1;
-	bool f = true;
-	for (int i = cur; i <= m; i++) {
-		cur += f ? 1 : -1;
-		if (cur == n || cur == 1)
-			f ^= 1;
-	}
-	printf("%d\n", cur);
+    cout << mx << " " << x << " " << N-y+1;
+    return 0;
 }
 
-int main() {    
-    ios_base::sync_with_stdio(false); 
-    cin.tie(NULL); 
-    cout.tie(NULL); 
+/*
 
-	int _;
-	cin >> _;
-	while(_--) solve();
+4 4
+1 3 5 7
+2 7 4 9
+6 8 9 10
+12 13 11 10
 
-	return 0;
-}
+*/

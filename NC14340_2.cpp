@@ -1,156 +1,113 @@
-#include <bits/stdc++.h> 
-#include <queue>
+#include<bits/stdc++.h>
+
 using namespace std;
 
-const int mod = 1e6+10;
-typedef long long ll;
-#define x first
-#define y second
-typedef pair<int, int> P;
+char mapp[50][50];
 
-P df[8] = {
-	{0, 1},
-	{0, -1},
-	{1, 0},
-	{1, -1},
-	{ -1, -1},
-	{ -1, 1},
-	{ -1, 0},
-	{1, 1},
-};
+int d[50][50];//存储是否到达过该位置
+int g[50][50];//存储火灾到达此位置时间
 
-P di[4] = {
-	{0, 1},
-	{1, 0},
-	{-1, 0},
-	{0, -1}
-};
+int dir[8][2] = {1, 0, -1, 0, 0, -1, 0, 1, 1, 1, 1, -1, -1, 1, -1, -1};
+int n, m, flag;
 
-int n,m;
+struct node {
+	int x, y, t;
+} now, nex;
+queue <node> cot;
 
-int s1,s2,e1,e2;
-
-char v[50][50];
-bool vis[50][50];
-int g[50][50];
-
-struct N {
-	int x,y,z;
-	N(int p1, int p2, int p3): x(p1), y(p2), z(p3) {}
-};
-
-queue<N> q;
-void bfs1() {
-
-	memset(vis, 0, sizeof(vis));
-	memset(g, 0, sizeof(g));
-
-	while (!q.empty()) {
-		q.pop();
-	}
-
-	for (int i = 1; i <= n; i++) {
-		for (int j = 1; j <= m; j++) {
-			if (v[i][j] == '*') {
-				q.emplace(i, j, 0);
-				g[i][j] = 0;
-				vis[i][j] = true;
-				break;
-			} 
-		}
-	}
-
-	N cur(0,0,0);
-	while (!q.empty()) {
-		cur = q.front();
-		q.pop();
-
-		for (int i = 0; i < 8; i++) {
-			int p1 = cur.x + df[i].x, p2 = cur.y + df[i].y;
-			if (p1 < 1 || p1 > n || p2 < 1 || p2 > m)
-				continue;
-			if (vis[p1][p2])
-				continue;
-
-			vis[p1][p2] = true;
-			if (v[p1][p2] == 'E') {
-				q.emplace(p1, p2, g[p1][p2] = cur.z + 2);
-			} else {
-				q.emplace(p1, p2, g[p1][p2] = cur.z + 1);
-			}
-		}
-	}
+int judge(int x, int y) {
+	return x >= 1 && x <= n && y >= 1 && y <= m && d[x][y] == 0;
 }
 
-void bfs2() {
-	memset(vis, 0, sizeof(vis));
-	while (!q.empty()) {
-		q.pop();
-	}
 
-	q.emplace(s1,s2,0);
+int bfsman(int x, int y) {
+	memset(d, 0, sizeof(d));
 
-	N cur(0,0,0);
-	while (!q.empty()) {
-		cur = q.front();	
-		q.pop();
+	now.x = x;
+	now.y = y;
+	now.t = 0;
 
-		if (cur.x == e1 && cur.y == e2) {
-			break;
-		}
+	d[x][y] = 1;
+	while (!cot.empty()) cot.pop();
+	cot.push(now);
 
+	while (!cot.empty()) {
+		now = cot.front();
+		cot.pop();
+		if (mapp[now.x][now.y] == 'E') return now.t;
 		for (int i = 0; i < 4; i++) {
-			int p1 = cur.x + di[i].x, p2 = cur.y + di[i].y;
-			if (p1 < 1 || p1 > n || p2 < 1 || p2 > m)
-				continue;
-			if (vis[p1][p2])
-				continue;
-			if (v[p1][p2] == '#')
-				continue;
-			if (cur.z >= g[p1][p2])
-				continue;
-
-			vis[p1][p2] = true;
-			q.emplace(p1, p2, g[p1][p2] = cur.z + 1);
-		}
-	}
-
-	if (cur.x == e1 && cur.y == e2) {
-		cout << cur.z << endl;
-	} else {
-		cout << "T_T" << endl;
-	}
-}
-
-void solve() {
-	cin >> n >> m;
-
-	for (int i = 1; i <= n; i++)  {
-		for (int j = 1; j <= m; j++) {
-			cin >> v[i][j];
-			switch (v[i][j]) {
-				case 'S':
-				s1 = i, s2 =j;
-				break;
-				case 'E':
-				e1 = i, e2 = j;
-				break;
+			nex.x = now.x + dir[i][0];
+			nex.y = now.y + dir[i][1];
+			nex.t = now.t + 1;
+			if (judge(nex.x, nex.y) && nex.t < g[nex.x][nex.y] && mapp[nex.x][nex.y] != '#') {
+				d[nex.x][nex.y] = 1;
+				cot.push(nex);
 			}
 		}
 	}
-
-	bfs1();
-	bfs2();
+	return -1;
 }
 
-int main() {    
-    ios_base::sync_with_stdio(false); 
-    cin.tie(NULL); 
-    cout.tie(NULL); 
+void bfsfire(int x, int y) {
+	memset(d, 0, sizeof(d));
+	memset(g, 0, sizeof(g));
+	now.x = x;
+	now.y = y;
+	now.t = 0;
+	d[x][y] = 1;
+	g[x][y] = 0;
+	while (!cot.empty())cot.pop();
+	cot.push(now);
+	while (!cot.empty())
+	{
+		now = cot.front();
+		cot.pop();
+		for (int i = 0; i < 8; i++)
+		{
+			nex.x = now.x + dir[i][0];
+			nex.y = now.y + dir[i][1];
+			nex.t = now.t + 1;
+			if (judge(nex.x, nex.y))
+			{
+				d[nex.x][nex.y] = 1;
+				cot.push(nex);
+				if (mapp[nex.x][nex.y] == 'E')
+					g[nex.x][nex.y] = nex.t + 1;
+				else
+					g[nex.x][nex.y] = nex.t;
+			}
+		}
+	}
+}
 
+int main() {
 	int t;
+	int x, y, a, b;
 	cin >> t;
-	while(t--) solve();	
-
+	while (t--) {
+		cin >> n >> m;
+		for (int i = 1; i <= n; i++) {
+			for (int j = 1; j <= m; j++)
+			{
+				cin >> mapp[i][j];
+				if (mapp[i][j] == 'S')
+				{
+					x = i; y = j;
+				}
+				if (mapp[i][j] == '*')
+				{
+					a = i; b = j;
+				}
+			}
+		}
+			
+		bfsfire(a, b);
+		int ans = bfsman(x, y);
+		
+		if (ans != -1) 
+			cout << ans << endl;
+		else 
+			cout << "T_T" << endl;
+	}
 	return 0;
 }
