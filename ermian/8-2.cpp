@@ -5,21 +5,18 @@
 
 int main() {
 
-	// where d is some positive number, common for all lanterns.
 	int num; long long length;
 	using namespace std;
 	cin >> num >> length;
 
 	vector<long long>v;
 
-	//locations for lanterns 0-10^9
 	for (int i = 0; i < num; i++) {
 		long long tmp;
 		cin >> tmp;
 		v.push_back(tmp);
 	}
 
-	// ascending
 	std::sort(v.begin(), v.end());
 
 	long long max_distance = std::max(v[0], length - v[v.size() - 1]) * 2; //head and end
